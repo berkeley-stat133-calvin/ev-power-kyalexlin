@@ -8,27 +8,54 @@ format: typst
 ## **Part 0: libraries**
 
 ```{r}
-
+library(dplyr)
+library(tidyr)
+library(stringr)
 ```
 
 ## **Part 1:** **Defining Research Question**
 
-Chosen Question:
+Chosen Question: How does the usage of renewable energy impact the cost of energy across states in 2023?
+
+# End product should be a bar chart with x = state, y = total energy cost, color = type of energy, all in 2023. 
 
 ## **Part 2: Data Preparation and Cleaning**
 
 ```{r}
+# get data
+setwd("data")
+total_use_2023 <- read.csv("total-use-2023.csv")
+avg_energy_price <- read.csv("av-energy-price-2021-2023.csv")
+
+#clean avg_energy_price
+states <- c(str_extract_all(avg_energy_price, "\\b(AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY)\\b"))
+costs_per_state <- avg_energy_price |>
+    str_extract_all("(\\d{2}\\.\\d{2})") |>  
+    unlist() |>                             
+    as.numeric()   
+costs_per_state_m <- matrix(costs_per_state, ncol=3, byrow=TRUE) 
+costs_per_state_m <- costs_per_state_m[-c(8, 52), ]
+
+avg_energy_price_df <- data.frame(
+    state = states,
+    costs = costs_per_state_m)
+
+colnames(avg_energy_price_df) <- c("State", "2021", "2022", "2023")
+
+#clean total_use_2023
+total_use_2023 <- select(total_use_2023, -(c("Energy_Source","DC", "US")))
+rownames(total_use_2023) <- c("Coal", "Natural Gas", "Petroleum", "Nuclear", "Total Renewable")
 
 ```
 
 ## **Part 3: Joining / Pivoting Datasets for Analysis**
 
 ```{r}
-
+spent way too long figuring out how to clean the dataset--will finish rest this weekend
 ```
 
 ## **Part 4: Mapping Visualization**
 
 ```{r}
-
+submitting for now for credit !
 ```
